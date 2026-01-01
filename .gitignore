@@ -1,0 +1,54 @@
+# Python / VS Code / Windows gitignore for Webcam Server
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test / coverage / caches
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.cache/
+*.cache
+
+# Logs / temp files
+*.log
+logs/
+*.tmp
+temp/
+
+# Jupyter (if any)
+.ipynb_checkpoints/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS-specific
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Pip metadata
+pip-wheel-metadata/
+pip-log.txt
+
+# Media/outputs (keep mask/ images under version control)
+captures/
+output/
+
