@@ -20,6 +20,7 @@ const state = {
   handControl: false,
   isConnected: false,
   fps: 0,
+  slidersHidden: false,
 };
 
 // ==================== DOM Elements ====================
@@ -61,6 +62,10 @@ const elements = {
   rollValue: document.getElementById("rollValue"),
   resetParamsBtn: document.getElementById("resetParamsBtn"),
 
+  // Slider visibility
+  toggleSlidersBtn: document.getElementById("toggleSlidersBtn"),
+  slidersContainer: document.getElementById("slidersContainer"),
+
   // Toggles
   showInfoToggle: document.getElementById("showInfoToggle"),
   handControlToggle: document.getElementById("handControlToggle"),
@@ -75,6 +80,19 @@ const elements = {
   toastIcon: document.getElementById("toastIcon"),
   toastMessage: document.getElementById("toastMessage"),
 };
+
+// ==================== Slider Visibility ====================
+function setSlidersHidden(hidden) {
+  state.slidersHidden = hidden;
+
+  if (elements.slidersContainer) {
+    elements.slidersContainer.classList.toggle("hidden", hidden);
+  }
+
+  if (elements.toggleSlidersBtn) {
+    elements.toggleSlidersBtn.textContent = hidden ? "👁 SHOW" : "👁 HIDE";
+  }
+}
 
 // ==================== API Functions ====================
 async function fetchAPI(endpoint, method = "GET", body = null) {
@@ -324,6 +342,13 @@ function setupEventListeners() {
     resetParams();
   });
 
+  // Hide/Show all sliders
+  if (elements.toggleSlidersBtn) {
+    elements.toggleSlidersBtn.addEventListener("click", () => {
+      setSlidersHidden(!state.slidersHidden);
+    });
+  }
+
   // Slider event handlers with debounce
   let sliderTimeout;
   const handleSliderChange = (
@@ -483,6 +508,9 @@ async function init() {
 
   // Update slider displays
   updateSliderValues();
+
+  // Ensure sliders start visible
+  setSlidersHidden(false);
 
   // Start status polling
   startStatusPolling();

@@ -14,6 +14,7 @@ Notes:
 - Uses greedy matching to maintain identity of faces across frames (prevents mask "switching").
 """
 import os
+import glob
 import math
 import time
 import threading
@@ -22,6 +23,40 @@ from typing import Optional, Dict, Any, List, Tuple
 import cv2
 import numpy as np
 import mediapipe as mp
+
+
+DEFAULT_PARAMS: Dict[str, Any] = {
+    "manual_scale_percent": 200,
+    "offset_y": -25,
+    "offset_x": 0,
+    "yaw_percent": 150,
+    "pitch_percent": 150,
+    "roll_offset": 0.0,
+}
+
+
+def scan_masks_folder(masks_folder: Optional[str]) -> Tuple[List[str], List[str]]:
+    """Scan folder mask untuk file .png/.jpg.
+
+    Return:
+        (available_masks, mask_display_names)
+        Index 0 selalu [No Mask] / No Mask.
+    """
+    available_masks: List[str] = ["[No Mask]"]
+    mask_display_names: List[str] = ["No Mask"]
+
+    if not masks_folder or not os.path.isdir(masks_folder):
+        return available_masks, mask_display_names
+
+    mask_files = glob.glob(os.path.join(masks_folder, "*.png"))
+    mask_files.extend(glob.glob(os.path.join(masks_folder, "*.jpg")))
+
+    for mask_path in sorted(mask_files):
+        filename = os.path.basename(mask_path)
+        available_masks.append(filename)
+        mask_display_names.append(os.path.splitext(filename)[0])
+
+    return available_masks, mask_display_names
 
 
 def load_mask_rgba(path: str) -> np.ndarray:
@@ -113,12 +148,12 @@ class FilterEngine:
         self.max_faces = max_faces
 
         # Default parameters (mirror GUI defaults)
-        self.manual_scale_percent = 200
-        self.offset_y = -25
-        self.offset_x = 0
-        self.yaw_percent = 150
-        self.pitch_percent = 150
-        self.roll_offset = 0
+        self.manual_scale_percent = int(DEFAULT_PARAMS["manual_scale_percent"])
+        self.offset_y = int(DEFAULT_PARAMS["offset_y"])
+        self.offset_x = int(DEFAULT_PARAMS["offset_x"])
+        self.yaw_percent = int(DEFAULT_PARAMS["yaw_percent"])
+        self.pitch_percent = int(DEFAULT_PARAMS["pitch_percent"])
+        self.roll_offset = float(DEFAULT_PARAMS["roll_offset"])
 
         # smoothing / per-face previous states (keyed by track_id)
         self.smooth = 0.60
@@ -478,12 +513,12 @@ class FilterEngine:
         self.roll_offset = float(degrees)
 
     def reset_to_defaults(self):
-        self.manual_scale_percent = 200
-        self.offset_y = -25
-        self.offset_x = 0
-        self.yaw_percent = 150
-        self.pitch_percent = 150
-        self.roll_offset = 0
+        self.manual_scale_percent = int(DEFAULT_PARAMS["manual_scale_percent"])
+        self.offset_y = int(DEFAULT_PARAMS["offset_y"])
+        self.offset_x = int(DEFAULT_PARAMS["offset_x"])
+        self.yaw_percent = int(DEFAULT_PARAMS["yaw_percent"])
+        self.pitch_percent = int(DEFAULT_PARAMS["pitch_percent"])
+        self.roll_offset = float(DEFAULT_PARAMS["roll_offset"])
         with self.lock:
             self.prev_states.clear()
             self.base_face_hs.clear()

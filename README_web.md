@@ -29,17 +29,19 @@ Versi web-based dari aplikasi face filter dengan tampilan modern yang mengikuti 
 ## Prasyarat
 
 - Python 3.9+ (disarankan 64-bit)
-- Dependencies:
-  - flask
-  - flask-socketio
-  - opencv-python
-  - numpy
-  - mediapipe
 
-Install dependencies:
+### Setup (disarankan: virtualenv `.venv`)
+
+Buat environment lokal:
 
 ```bash
-py -3.11 -m pip install flask flask-socketio opencv-python numpy mediapipe
+py -m venv .venv
+```
+
+Install dependencies dari `requirements.txt`:
+
+```bash
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 ## Menjalankan
@@ -47,7 +49,7 @@ py -3.11 -m pip install flask flask-socketio opencv-python numpy mediapipe
 Pastikan folder berisi gambar mask tersedia (misal `mask/`). Jalankan:
 
 ```bash
-py -3.11 web_app.py --masks-folder mask
+.\.venv\Scripts\python.exe web_app.py --masks-folder mask
 ```
 
 Kemudian buka browser dan akses:
@@ -58,7 +60,7 @@ http://127.0.0.1:5000
 ### Opsi Command Line
 
 ```bash
-py -3.11 web_app.py --masks-folder mask --port 5000 --host 127.0.0.1
+.\.venv\Scripts\python.exe web_app.py --masks-folder mask --port 5000 --host 127.0.0.1
 ```
 
 | Parameter | Default | Deskripsi |

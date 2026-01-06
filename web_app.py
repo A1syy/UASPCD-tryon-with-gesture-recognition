@@ -9,12 +9,10 @@ import os
 import sys
 import cv2
 import time
-import glob
 import base64
-import json
 import numpy as np
 from flask import Flask, render_template, Response, jsonify, request
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 from typing import Optional, List, Dict, Any
 import threading
 
@@ -27,7 +25,7 @@ except Exception:
 
 # Import FilterEngine
 try:
-    from filter_ref import FilterEngine
+    from filter_ref import FilterEngine, DEFAULT_PARAMS, scan_masks_folder
 except ImportError:
     print("❌ Error: filter_ref.py tidak ditemukan!")
     print("   Pastikan filter_ref.py ada di folder yang sama.")
@@ -61,12 +59,12 @@ class WebcamFilterWebApp:
         self.mask_display_names: List[str] = []
         
         # Parameters
-        self.param_scale = 200
-        self.param_offset_x = 0
-        self.param_offset_y = -25
-        self.param_yaw = 150
-        self.param_pitch = 150
-        self.param_roll = 0
+        self.param_scale = int(DEFAULT_PARAMS["manual_scale_percent"])
+        self.param_offset_x = int(DEFAULT_PARAMS["offset_x"])
+        self.param_offset_y = int(DEFAULT_PARAMS["offset_y"])
+        self.param_yaw = int(DEFAULT_PARAMS["yaw_percent"])
+        self.param_pitch = int(DEFAULT_PARAMS["pitch_percent"])
+        self.param_roll = int(DEFAULT_PARAMS["roll_offset"])
         
         # Hand gesture control
         self.enable_hand_control = False
@@ -134,22 +132,12 @@ class WebcamFilterWebApp:
     
     def scan_masks(self):
         """Scan masks folder for available mask files."""
-        self.available_masks = ["[No Mask]"]
-        self.mask_display_names = ["No Mask"]
-        
+        self.available_masks, self.mask_display_names = scan_masks_folder(self.masks_folder)
+
         if not self.masks_folder or not os.path.isdir(self.masks_folder):
             print("⚠️ No masks folder found")
             return
-        
-        mask_files = glob.glob(os.path.join(self.masks_folder, "*.png"))
-        mask_files.extend(glob.glob(os.path.join(self.masks_folder, "*.jpg")))
-        
-        for mask_path in sorted(mask_files):
-            filename = os.path.basename(mask_path)
-            self.available_masks.append(filename)
-            display_name = os.path.splitext(filename)[0]
-            self.mask_display_names.append(display_name)
-        
+
         print(f"📁 Found {len(self.available_masks)-1} mask(s)")
     
     def get_masks_info(self) -> List[Dict[str, Any]]:
@@ -206,12 +194,12 @@ class WebcamFilterWebApp:
     
     def reset_params(self):
         """Reset all parameters to default."""
-        self.param_scale = 200
-        self.param_offset_x = 0
-        self.param_offset_y = -25
-        self.param_yaw = 150
-        self.param_pitch = 150
-        self.param_roll = 0
+        self.param_scale = int(DEFAULT_PARAMS["manual_scale_percent"])
+        self.param_offset_x = int(DEFAULT_PARAMS["offset_x"])
+        self.param_offset_y = int(DEFAULT_PARAMS["offset_y"])
+        self.param_yaw = int(DEFAULT_PARAMS["yaw_percent"])
+        self.param_pitch = int(DEFAULT_PARAMS["pitch_percent"])
+        self.param_roll = int(DEFAULT_PARAMS["roll_offset"])
         if self.engine:
             self.engine.reset_to_defaults()
     

@@ -29,7 +29,6 @@ python -m pip install -r requirements.txt
 Pastikan folder berisi gambar mask tersedia (misal `mask/`). Jalankan:
 
 ```bash
-cd "C:\Users\aisla\Documents\Coding\Kuliah\Pengolahan citra digital\Issat\Filter-Face-Godot-Ver\Webcam Server"
 python webcam_local.py --masks-folder mask
 ```
 

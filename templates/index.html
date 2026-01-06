@@ -108,16 +108,25 @@
         <div class="control-card">
           <div class="card-header">
             <h3>ADJUSTMENTS</h3>
-            <button
-              class="reset-params-btn"
-              id="resetParamsBtn"
-              title="Reset to default"
-            >
-              ↺ RESET
-            </button>
+            <div class="card-actions">
+              <button
+                class="reset-params-btn"
+                id="toggleSlidersBtn"
+                title="Hide/Show all sliders"
+              >
+                👁 HIDE
+              </button>
+              <button
+                class="reset-params-btn"
+                id="resetParamsBtn"
+                title="Reset to default"
+              >
+                ↺ RESET
+              </button>
+            </div>
           </div>
 
-          <div class="sliders-container">
+          <div class="sliders-container" id="slidersContainer">
             <!-- Scale Slider -->
             <div class="slider-group">
               <div class="slider-header">
