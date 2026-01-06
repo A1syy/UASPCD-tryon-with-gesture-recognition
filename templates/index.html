@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HERO MASK - Virtual Try-On</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <span class="logo-icon">⚡</span>
+          <span class="logo-text">Hero Mask</span>
+        </div>
+      </div>
+      <div class="header-center">
+        <div class="status-bar">
+          <span class="status-indicator" id="statusIndicator"></span>
+          <span class="status-text" id="statusText">INITIALIZING...</span>
+          <span class="fps-counter" id="fpsCounter">0 FPS</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="help-btn" id="helpBtn" title="Help & Shortcuts (H)">
+          <span>?</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Video Preview Section -->
+      <section class="preview-section">
+        <div class="preview-container">
+          <img id="videoFeed" src="/video_feed" alt="Camera Feed" />
+          <div class="preview-overlay" id="previewOverlay">
+            <div class="gesture-hints" id="gestureHints">
+              <div class="gesture-hint">✋ PALM → CLEAR</div>
+              <div class="gesture-hint">✌️ V-SIGN → NEXT</div>
+              <div class="gesture-hint">👆 INDEX → PREV</div>
+            </div>
+          </div>
+          <div class="preview-loading" id="previewLoading">
+            <div class="spinner"></div>
+            <p>LOADING CAMERA...</p>
+          </div>
+        </div>
+
+        <!-- Quick Actions Bar -->
+        <div class="quick-actions">
+          <button class="action-btn" id="pauseBtn" title="Pause/Resume (Space)">
+            <span class="btn-icon">⏸</span>
+            <span class="btn-text">PAUSE</span>
+          </button>
+          <button
+            class="action-btn"
+            id="resetBtn"
+            title="Reset All Parameters (R)"
+          >
+            <span class="btn-icon">↺</span>
+            <span class="btn-text">RESET</span>
+          </button>
+          <button class="action-btn" id="clearMaskBtn" title="Clear Mask (C)">
+            <span class="btn-icon">✕</span>
+            <span class="btn-text">CLEAR</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Controls Section -->
+      <aside class="controls-section">
+        <!-- Current Mask Display -->
+        <div class="control-card current-mask-card">
+          <div class="card-header">
+            <h3>ACTIVE HERO</h3>
+          </div>
+          <div class="current-mask-display">
+            <div class="mask-preview" id="currentMaskPreview">
+              <span class="no-mask-icon">⚡</span>
+            </div>
+            <span class="mask-name" id="currentMaskName">NO MASK</span>
+          </div>
+        </div>
+
+        <!-- Mask Selection -->
+        <div class="control-card">
+          <div class="card-header">
+            <h3>SELECT HERO</h3>
+            <span class="card-hint">Click to choose</span>
+          </div>
+          <div class="mask-grid" id="maskGrid">
+            <!-- Masks will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Parameter Controls -->
+        <div class="control-card">
+          <div class="card-header">
+            <h3>ADJUSTMENTS</h3>
+            <button
+              class="reset-params-btn"
+              id="resetParamsBtn"
+              title="Reset to default"
+            >
+              ↺ RESET
+            </button>
+          </div>
+
+          <div class="sliders-container">
+            <!-- Scale Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="scaleSlider">SCALE</label>
+                <span class="slider-value" id="scaleValue">200%</span>
+              </div>
+              <input
+                type="range"
+                id="scaleSlider"
+                class="slider"
+                min="50"
+                max="400"
+                value="200"
+              />
+              <div class="slider-marks">
+                <span>50%</span>
+                <span>400%</span>
+              </div>
+            </div>
+
+            <!-- Offset X Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="offsetXSlider">HORIZONTAL</label>
+                <span class="slider-value" id="offsetXValue">0</span>
+              </div>
+              <input
+                type="range"
+                id="offsetXSlider"
+                class="slider"
+                min="-200"
+                max="200"
+                value="0"
+              />
+              <div class="slider-marks">
+                <span>-200</span>
+                <span>+200</span>
+              </div>
+            </div>
+
+            <!-- Offset Y Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="offsetYSlider">VERTICAL</label>
+                <span class="slider-value" id="offsetYValue">-25</span>
+              </div>
+              <input
+                type="range"
+                id="offsetYSlider"
+                class="slider"
+                min="-200"
+                max="200"
+                value="-25"
+              />
+              <div class="slider-marks">
+                <span>-200</span>
+                <span>+200</span>
+              </div>
+            </div>
+
+            <!-- Yaw Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="yawSlider">YAW ROTATION</label>
+                <span class="slider-value" id="yawValue">150%</span>
+              </div>
+              <input
+                type="range"
+                id="yawSlider"
+                class="slider"
+                min="0"
+                max="300"
+                value="150"
+              />
+              <div class="slider-marks">
+                <span>0%</span>
+                <span>300%</span>
+              </div>
+            </div>
+
+            <!-- Pitch Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="pitchSlider">PITCH ROTATION</label>
+                <span class="slider-value" id="pitchValue">150%</span>
+              </div>
+              <input
+                type="range"
+                id="pitchSlider"
+                class="slider"
+                min="0"
+                max="300"
+                value="150"
+              />
+              <div class="slider-marks">
+                <span>0%</span>
+                <span>300%</span>
+              </div>
+            </div>
+
+            <!-- Roll Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="rollSlider">TILT ANGLE</label>
+                <span class="slider-value" id="rollValue">0°</span>
+              </div>
+              <input
+                type="range"
+                id="rollSlider"
+                class="slider"
+                min="-180"
+                max="180"
+                value="0"
+              />
+              <div class="slider-marks">
+                <span>-180°</span>
+                <span>+180°</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toggle Controls -->
+        <div class="control-card">
+          <div class="card-header">
+            <h3>OPTIONS</h3>
+          </div>
+
+          <div class="toggle-group">
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">SHOW INFO</span>
+                <span class="toggle-hint">Display FPS & status overlay</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="showInfoToggle" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">GESTURE CONTROL</span>
+                <span class="toggle-hint">Use hand gestures</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="handControlToggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>CONTROLS & SHORTCUTS</h2>
+          <button class="modal-close" id="closeHelpModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="help-section">
+            <h4>🎮 KEYBOARD SHORTCUTS</h4>
+            <div class="shortcut-list">
+              <div class="shortcut-item">
+                <kbd>SPACE</kbd>
+                <span>Pause / Resume</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>R</kbd>
+                <span>Reset all parameters</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>C</kbd>
+                <span>Clear mask</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>←</kbd>
+                <span>Previous mask</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>→</kbd>
+                <span>Next mask</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>G</kbd>
+                <span>Toggle gesture control</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>I</kbd>
+                <span>Toggle info overlay</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>H</kbd>
+                <span>Show this help</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>ESC</kbd>
+                <span>Close dialog</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="help-section">
+            <h4>🖐️ HAND GESTURES</h4>
+            <p class="help-text">
+              Enable "GESTURE CONTROL" to use hand gestures:
+            </p>
+            <div class="gesture-list">
+              <div class="gesture-item">
+                <span class="gesture-icon">✋</span>
+                <span>Open palm → Clear mask</span>
+              </div>
+              <div class="gesture-item">
+                <span class="gesture-icon">✌️</span>
+                <span>V Sign → Next mask</span>
+              </div>
+              <div class="gesture-item">
+                <span class="gesture-icon">👆</span>
+                <span>Index finger → Previous mask</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="help-section">
+            <h4>💡 PRO TIPS</h4>
+            <ul class="tips-list">
+              <li>Ensure good lighting for optimal face detection</li>
+              <li>Position your face in the center of the frame</li>
+              <li>Hold gestures for ~0.5 seconds for detection</li>
+              <li>Use sliders to fine-tune mask position and size</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <span class="toast-icon" id="toastIcon">✓</span>
+      <span class="toast-message" id="toastMessage"></span>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>
